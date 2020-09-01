@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fetch = require('node-fetch');
+var HTML = require('node-html-parser')
 
 const port = process.env.PORT || 8080;
 
@@ -14,6 +15,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 // });
 
 app.get('/*', function (req, res) {
+    let alreadyLoaded = false;
     fetch('https://schedule.nspu.ru/group_shedule.php?id=1139')
     .then(function (response) {
         switch (response.status) {
@@ -22,18 +24,17 @@ app.get('/*', function (req, res) {
                 return response.text();
             // status "Not Found"
             case 404:
+                console.log(1);
                 throw response;
         }
     })
     .then(function (template) {
-        console.log(template);
-        res.send("hello")
-        console.log("-----------------------------------------");
-        console.log("-----------------------------------------");
-        console.log("-----------------------------------------");
+        let ast = HTML.parse(template);
+        res.send({resp: [ast]});
     })
     .catch(function (response) {
         // "Not Found"
+        console.log(2);
         console.log(response.statusText);
     });
 });
