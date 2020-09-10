@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const parser = require('./requestSchedule')
+const parser = require('./requestSchedule');
 
 const port = process.env.PORT || 8080;
 
@@ -10,7 +10,18 @@ app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/schedule', function (req, res) {
-    parser.parseHTML(req.query.id).then(response => res.send(response));
+    parser.parseHTML(req.query.id)
+    .then(layout => parser.getLinesOfParsedValues(layout))
+    .then(values => (parser.getObjectOfParsedValues(values)))
+    .then(response => res.send({
+        operated: true,
+        data: response
+    }))
+    .catch(e => {
+        res.send({
+            operated: false
+        });
+    });
 });
 
 app.get('/*', function (req, res) {

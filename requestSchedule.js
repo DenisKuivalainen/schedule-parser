@@ -1,4 +1,4 @@
-const HTML = require('node-html-parser')
+const HTML = require('node-html-parser');
 const fetch = require('node-fetch');
 
 async function parseHTML(id) {
@@ -12,61 +12,64 @@ async function parseHTML(id) {
                 throw response;
         }
     })
-    .then(function (layout) {
-        let elementsInScheduleTable = HTML.parse(layout).childNodes[1].childNodes[6].childNodes[0].childNodes[4];
-        let notNullInScheduleTable = [];
-        let stringArray = [];
-        let positionArray =[];
+}
 
-        elementsInScheduleTable.childNodes.forEach(element => {
-            if(element.tagName !== undefined) {
-                notNullInScheduleTable.push(element);
-            }
-        });
+function getLinesOfParsedValues(layout) {
+    let elementsInScheduleTable = HTML.parse(layout).childNodes[1].childNodes[6].childNodes[0].childNodes[4];
+    let notNullInScheduleTable = [];
+    let stringArray = [HTML.parse(layout).childNodes[1].childNodes[6].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[1].rawText];
+    let positionArray =[[0, 0]];
 
-        
-        for (let i = 0; i < notNullInScheduleTable.length; i++) {
+    elementsInScheduleTable.childNodes.forEach(element => {
+        if(element.tagName !== undefined) {
+            notNullInScheduleTable.push(element);
+        }
+    });
 
-            if(notNullInScheduleTable[i] !== undefined) {
+    
+    for (let i = 0; i < notNullInScheduleTable.length; i++) {
 
-                for (let j = 0; j < notNullInScheduleTable[i].childNodes.length; j++) {
+        if(notNullInScheduleTable[i] !== undefined) {
 
-                    if(notNullInScheduleTable[i].childNodes[j] !== undefined) {
+            for (let j = 0; j < notNullInScheduleTable[i].childNodes.length; j++) {
 
-                        for (let k = 0; k < notNullInScheduleTable[i].childNodes[j].childNodes.length; k++) {
+                if(notNullInScheduleTable[i].childNodes[j] !== undefined) {
 
-                            if(notNullInScheduleTable[i].childNodes[j].childNodes[k] !== undefined && notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText !== '') {
-                                stringArray.push(notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText);
-                                positionArray.push([i, j]);
-                            }           
-                        }
+                    for (let k = 0; k < notNullInScheduleTable[i].childNodes[j].childNodes.length; k++) {
+
+                        if(notNullInScheduleTable[i].childNodes[j].childNodes[k] !== undefined && notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText !== '') {
+                            stringArray.push(notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText);
+                            positionArray.push([i, j]);
+                        }           
                     }
                 }
             }
         }
+    }
 
-        return [stringArray, positionArray];
-    })
-    .then(function(scheduleValues) {
-        let modnayPosition = scheduleValues[0].indexOf('Понедельник ');
-        let tuesdayPosition = scheduleValues[0].indexOf('Вторник ');
-        let wednesdayPosition = scheduleValues[0].indexOf('Среда ');
-        let thursdayPosition = scheduleValues[0].indexOf('Четверг ');
-        let fridayPosition = scheduleValues[0].indexOf('Пятница ');
-        let saturdayPosition = scheduleValues[0].indexOf('Суббота ');
+    return [stringArray, positionArray];
+}
 
-        return {
-            week: scheduleValues[0][0].indexOf(',') !== -1,
-            days: {
-                monday: getDatSchedule(modnayPosition, tuesdayPosition, scheduleValues),
-                tuesday: getDatSchedule(tuesdayPosition, wednesdayPosition, scheduleValues),
-                wednesday: getDatSchedule(wednesdayPosition, thursdayPosition, scheduleValues),
-                thursday: getDatSchedule(thursdayPosition, fridayPosition, scheduleValues),
-                friday: getDatSchedule(fridayPosition, saturdayPosition, scheduleValues),
-                saturday: getDatSchedule(saturdayPosition, scheduleValues[0].length, scheduleValues),
-            }
+function getObjectOfParsedValues(scheduleValues) {
+    let modnayPosition = scheduleValues[0].indexOf('Понедельник ');
+    let tuesdayPosition = scheduleValues[0].indexOf('Вторник ');
+    let wednesdayPosition = scheduleValues[0].indexOf('Среда ');
+    let thursdayPosition = scheduleValues[0].indexOf('Четверг ');
+    let fridayPosition = scheduleValues[0].indexOf('Пятница ');
+    let saturdayPosition = scheduleValues[0].indexOf('Суббота ');
+
+    return {
+        group: scheduleValues[0][0],
+        week: scheduleValues[0][1].indexOf(',') !== -1,
+        days: {
+            monday: getDatSchedule(modnayPosition, tuesdayPosition, scheduleValues),
+            tuesday: getDatSchedule(tuesdayPosition, wednesdayPosition, scheduleValues),
+            wednesday: getDatSchedule(wednesdayPosition, thursdayPosition, scheduleValues),
+            thursday: getDatSchedule(thursdayPosition, fridayPosition, scheduleValues),
+            friday: getDatSchedule(fridayPosition, saturdayPosition, scheduleValues),
+            saturday: getDatSchedule(saturdayPosition, scheduleValues[0].length, scheduleValues),
         }
-    })
+    }
 }
 
 function getDatSchedule(day1, day2, arr) {
@@ -119,4 +122,4 @@ function deleteLastComma(str) {
     return str.substr(0, commaIndex >= 0 ? commaIndex: str.length);
 }
 
-module.exports = {parseHTML};
+module.exports = {parseHTML, getLinesOfParsedValues, getObjectOfParsedValues};
