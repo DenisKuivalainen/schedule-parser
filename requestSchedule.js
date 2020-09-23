@@ -21,23 +21,21 @@ function getLinesOfParsedValues(layout) {
     let positionArray =[[0, 0]];
 
     elementsInScheduleTable.childNodes.forEach(element => {
-        if(element.tagName !== undefined) {
-            notNullInScheduleTable.push(element);
-        }
+        !!element.tagName && notNullInScheduleTable.push(element);
     });
 
     
     for (let i = 0; i < notNullInScheduleTable.length; i++) {
 
-        if(notNullInScheduleTable[i] !== undefined) {
+        if(!!notNullInScheduleTable[i]) {
 
             for (let j = 0; j < notNullInScheduleTable[i].childNodes.length; j++) {
 
-                if(notNullInScheduleTable[i].childNodes[j] !== undefined) {
+                if(!!notNullInScheduleTable[i].childNodes[j]) {
 
                     for (let k = 0; k < notNullInScheduleTable[i].childNodes[j].childNodes.length; k++) {
 
-                        if(notNullInScheduleTable[i].childNodes[j].childNodes[k] !== undefined && notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText !== '') {
+                        if(!!notNullInScheduleTable[i].childNodes[j].childNodes[k] && notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText !== '') {
                             stringArray.push(notNullInScheduleTable[i].childNodes[j].childNodes[k].rawText);
                             positionArray.push([i, j]);
                         }           
