@@ -13,7 +13,7 @@ fetch('https://schedule.nspu.ru/group_shedule.php?id=1424')
         }
     })
     .then(function (layout) {
-        let eist = HTML.parse(layout).childNodes[1].childNodes[10];
+        let eist = HTML.parse(layout).childNodes[1].childNodes[6].childNodes[0].childNodes[4];
 
 
         let a = eist

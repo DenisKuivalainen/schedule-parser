@@ -17,11 +17,11 @@ app.get('/schedule', function (req, res) {
         operated: true,
         data: response
     }))
-    .catch(e => {
-        res.send({
-            operated: false
-        });
-    });
+    // .catch(e => {
+    //     res.send({
+    //         operated: false
+    //     });
+    // });
 });
 
 app.get('/*', function (req, res) {

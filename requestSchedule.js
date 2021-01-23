@@ -93,14 +93,15 @@ function getDatSchedule(day1, day2, arr) {
                 subjects.push({name: name, desc: desc, code: code});
                 break;
             }
-            
+            // console.log(arr[0].length - cur)
             while(cArr[cur][1] === cArr[cur - 1][1]) {
                 desc += replaceChars(sArr[cur]);
                 cur += 1;
-                if(sArr[cur - 1].lastIndexOf(';') >= 0) {break;}
+                if(sArr[cur - 1].lastIndexOf(';') >= 0 || cur === day2) {break;}
             }
 
             subjects.push({name: name, desc: desc, code: code});
+            if(cur === day2) {break;}
             if(cArr[cur][0] !== cArr[cur - 1][0]) {break;}
         }
 
